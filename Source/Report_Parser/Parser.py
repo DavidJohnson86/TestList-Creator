@@ -56,7 +56,11 @@ class ListCreator(object):
         row_counter, set_counter = 0, 0
         inlist_root = inlist.getroot()
         for test_sets in range(1, len(inlist_root[0]), 2):
-            elem = inlist_root[0][test_sets][0]
+            try:
+                elem = inlist_root[0][test_sets][0]
+            except IndexError:
+                print('error')
+                return False
             for test_cases in range(0, len(elem)):
                 if elem[test_cases].tag == 'ENABLED':
                     row_counter = 0
@@ -68,4 +72,8 @@ class ListCreator(object):
                 if elem[test_cases].text in listofFailed:
                     test_states[row_counter - 2] = 1
                     test_status.text = str(test_states)[1:-1:]
-                    inlist.write(str(output))
+        try:
+            inlist.write(str(output))
+        except IOError:
+            return False
+        return True

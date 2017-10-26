@@ -1,0 +1,37 @@
+Process Finished 33 test cases has been added to the testlist. 
+Date: 2017-10-25:17:40
+ConfigurationMatrix_Unknown_XmlReport.xml
+------------------------------------------------------------
+LIN_BF_Unconfigured
+LIN_BF_Configured
+UpFront_Airbagfrontsensor_links_Unconfigured
+Airbagsensor_C-Saeule_links_(y-Richtung)_Unconfigured
+Airbagsensor_C-Saeule_links_(y-Richtung)_Configured
+Airbagsensor_C-Saeule_rechts_(y-Richtung)_Unconfigured
+Airbagsensor_C-Saeule_rechts_(y-Richtung)_Configured
+Airbagsensor_C-Saeule_links_(y-Richtung)_All_Unconfigured
+Airbagsensor_C-Saeule_rechts_(y-Richtung)_All_Unconfigured
+ZK1_Sitzairbag_Fahrer_Invalid_NC
+ZK2_Sitzairbag_Beifahrer_Invalid_NC
+ZK4_Crash_HV1_(SBK2)_Invalid_NC
+ZK5_Airbag_Windowbag_Invalid_NC
+ZK6_Windowbag_Vent_Invalid_NC
+ZK7_Windowbag_Retractor1_Invalid_NC
+ZK8_Windowbag_Retractor2_Invalid_NC
+ZK9_Sicherheitsbatterieklemme_RangeExtender_(ZK_HV2)_Invalid_NC
+ZK10_Endbeschlagstrammer_hinten_links_Invalid_NC
+ZK11_Endbeschlagstrammer_hinten_rechts_Invalid_NC
+ZK12_Sitzairbag_Beifahrer_adaptives_Vent_Invalid_NC
+ZK13_Airbag_Beifahrer_Stufe_1_Invalid_NC
+ZK14_Airbag_Beifahrer_Vent_Invalid_NC
+ZK15_Airbag_Fahrer_Stufe_1_Invalid_NC
+ZK16_Airbag_Fahrer_Vent_Invalid_NC
+ZK17_Knieairbag_Fahrer_Invalid_NC
+ZK18_Knieairbag_Beifahrer_Invalid_NC
+LIN_BF_Unconfigured_NC
+Airbagsensor_C-Saeule_links_(y-Richtung)_Unconfigured_NC
+Airbagsensor_C-Saeule_links_(y-Richtung)_Configured_NC
+Airbagsensor_C-Saeule_rechts_(y-Richtung)_Unconfigured_NC
+Airbagsensor_C-Saeule_rechts_(y-Richtung)_Configured_NC
+Airbagsensor_C-Saeule_links_(y-Richtung)_All_Unconfigured_NC
+Airbagsensor_C-Saeule_rechts_(y-Richtung)_All_Unconfigured_NC

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tal xmlns="http://bmw.com/2005/psdz.data.tal" schemaVersion="4.9.0" status="Executable">
+    <ExecProperties supportsParallelMostFlash="false"/>
+    <talLine diagAddress="01" baseVariant="ACSM5" status="Executable" id="tl_1">
+        <prerequisite talLineID="tl_3"/>
+        <swDeploy status="Executable">
+            <swDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>SWFL</processClass>
+                    <id>00001B2F</id>
+                    <mainVersion>004</mainVersion>
+                    <subVersion>025</subVersion>
+                    <patchVersion>004</patchVersion>
+                </sgbmid>
+            </swDeployTA>
+        </swDeploy>
+    </talLine>
+    <talLine diagAddress="01" baseVariant="ACSM5" status="Executable" id="tl_2">
+        <prerequisite talLineID="tl_1"/>
+        <cdDeploy status="Executable">
+            <cdDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>CAFD</processClass>
+                    <id>00001B29</id>
+                    <mainVersion>006</mainVersion>
+                    <subVersion>002</subVersion>
+                    <patchVersion>007</patchVersion>
+                </sgbmid>
+            </cdDeployTA>
+            <cdDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>CAFD</processClass>
+                    <id>00001B2A</id>
+                    <mainVersion>005</mainVersion>
+                    <subVersion>005</subVersion>
+                    <patchVersion>008</patchVersion>
+                </sgbmid>
+            </cdDeployTA>
+            <cdDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>CAFD</processClass>
+                    <id>00001B2B</id>
+                    <mainVersion>005</mainVersion>
+                    <subVersion>004</subVersion>
+                    <patchVersion>009</patchVersion>
+                </sgbmid>
+            </cdDeployTA>
+            <cdDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>CAFD</processClass>
+                    <id>00001B2C</id>
+                    <mainVersion>002</mainVersion>
+                    <subVersion>010</subVersion>
+                    <patchVersion>002</patchVersion>
+                </sgbmid>
+            </cdDeployTA>
+            <cdDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>CAFD</processClass>
+                    <id>00001B2D</id>
+                    <mainVersion>002</mainVersion>
+                    <subVersion>009</subVersion>
+                    <patchVersion>004</patchVersion>
+                </sgbmid>
+            </cdDeployTA>
+            <cdDeployTA status="Executable">
+                <sgbmid>
+                    <processClass>CAFD</processClass>
+                    <id>00002ABF</id>
+                    <mainVersion>004</mainVersion>
+                    <subVersion>000</subVersion>
+                    <patchVersion>006</patchVersion>
+                </sgbmid>
+            </cdDeployTA>
+        </cdDeploy>
+    </talLine>
+    <talLine diagAddress="01" baseVariant="ACSM5" status="Executable" id="tl_3">
+        <blFlash status="Executable">
+            <blFlashTA status="Executable">
+                <sgbmid>
+                    <processClass>BTLD</processClass>
+                    <id>00001B2E</id>
+                    <mainVersion>004</mainVersion>
+                    <subVersion>025</subVersion>
+                    <patchVersion>000</patchVersion>
+                </sgbmid>
+            </blFlashTA>
+        </blFlash>
+    </talLine>
+    <executionTime actualEndTime="0" actualStartTime="0" plannedEndTime="0" plannedStartTime="0"/>
+    <installedECUList_Ist/>
+    <installedECUList_Soll/>
+</tal>

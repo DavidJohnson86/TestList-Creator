@@ -2,7 +2,7 @@
 
 """
 ==============================================================================
-GUI for Xml Report File merging for BMW ACSM5 Project
+GUI for BMW ACSM5 Helper Tool
 ==============================================================================
                             OBJECT SPECIFICATION
 ==============================================================================
@@ -10,7 +10,7 @@ $ProjectName: BMW ACSM5 $
 $Source: Application.py
 $Revision: 1.3 $
 $Author: David Szurovecz $
-$Date: 2017/07/14 16:20:32CEST $
+$Date: 2016/10/24 16:20:32CEST $
 ============================================================================
 """
 from lxml import etree
@@ -24,6 +24,8 @@ import sys
 import threading
 import subprocess as sp
 from Report_Parser import Parser
+from Flash_Helper import Execution
+from easygui.easygui import diropenbox
 
 
 class MainApplication(tk.Frame):
@@ -31,11 +33,17 @@ class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         '''INIT Objects'''
         tk.Frame.__init__(self, parent, *args, **kwargs)
-        self.parent = tk.Frame(parent)
+        self.parent = ttk.Notebook(parent)
+        self.parent.bind_all("<<NotebookTabChanged>>", self.tabChangedEvent)
+        self.tabone = tk.Frame(self.parent)
+        self.tabtwo = tk.Frame(self.parent)
         self.parent.pack()
         root.title('TestList Creator')
         self.resetInputs()
         self.initUI()
+
+    def tabChangedEvent(self, event):
+        self.resetInputs()
 
     def resetInputs(self):
         self.file_one = u''
@@ -47,33 +55,51 @@ class MainApplication(tk.Frame):
             pass
 
     def initUI(self):
+        self.parent.add(self.tabone, text='Create Testlist')
+        self.parent.add(self.tabtwo, text='Prepare for Flashing')
         #=======================================================================
         # Create Container For MainFrame
         #=======================================================================
-        self.hintone = tk.LabelFrame(self.parent, text=" 1. Enter File Details: ")
+        self.hintone = tk.LabelFrame(self.tabone, text=" 1. Enter File Details: ")
         self.hintone.grid(row=0, columnspan=7, sticky='W', padx=5, pady=5, ipadx=5, ipady=5)
         #=======================================================================
-        # Create Container For Settings
+        # Create container For SecondFrame
         #=======================================================================
-        self.hintsettings = tk.LabelFrame(self.parent, text=" 2. Settings: ")
+        self.hinttwo = tk.LabelFrame(self.tabtwo, text=" 1. Enter File Details: ")
+        self.hinttwo.grid(row=0, columnspan=7, sticky='W', padx=5, pady=5, ipadx=5, ipady=5)
+        #=======================================================================
+        # Create Container For Settings MainFrame
+        #=======================================================================
+        self.hintsettings = tk.LabelFrame(self.tabone, text=" 2. Settings: ")
         self.hintsettings.grid(row=3, columnspan=7, sticky='W', padx=5, pady=5, ipadx=5, ipady=5)
         #=======================================================================
-        # Create Container for Picture
+        # Create Container For Settings Secondary Frame
         #=======================================================================
-        self.hintpic = tk.LabelFrame(self.parent, bd=0)
-        self.hintpic.grid(row=3, columnspan=7, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
+        self.hintsettings2 = tk.LabelFrame(self.tabtwo, text=" 2. Settings: ")
+        self.hintsettings2.grid(row=3, columnspan=7, sticky='W', padx=5, pady=5, ipadx=5, ipady=5)
         #=======================================================================
-        # Create Buttons
+        # Create Container for Picture MainFrame
         #=======================================================================
-        self.ok_button = tk.Button(self.parent, text="OK", command=self.OKButton)
+        self.hintpic = tk.LabelFrame(self.tabone, bd=0)
+        self.hintpic.grid(row=3, columnspan=10, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
+        #=======================================================================
+        # Create Container for Picture Secondary Frame
+        #=======================================================================
+        self.hintpic2 = tk.LabelFrame(self.tabtwo, bd=0)
+        self.hintpic2.grid(row=3, columnspan=10, sticky='E', padx=5, pady=5, ipadx=5, ipady=5)
+        #=======================================================================
+        # Create Buttons for MainFrame
+        #=======================================================================
+        self.ok_button = tk.Button(self.tabone, text="OK", command=self.OKButton)
         self.ok_button.grid(row=4, column=0, sticky='W' + 'E', padx=5, pady=5, ipadx=1, ipady=1)
-        self.exit_button = tk.Button(self.parent, text="Exit", command=self.cancelbutton)
+        self.exit_button = tk.Button(self.tabone, text="Exit", command=self.cancelbutton)
         self.exit_button.grid(row=4, column=1, sticky='W', padx=5, pady=5, ipadx=30, ipady=1)
-        browseBtnone = tk.Button(self.hintone, text="Browse ...", command=self.browseFirst)
+
+        browseBtnone = tk.Button(self.tabone, text="Browse ...", command=self.browseFirst)
         browseBtnone.grid(row=0, column=8, sticky='W', padx=5, pady=2)
-        browseBtntwo = tk.Button(self.hintone, text="Browse ...", command=self.browseSecond)
+        browseBtntwo = tk.Button(self.tabone, text="Browse ...", command=self.browseSecond)
         browseBtntwo.grid(row=1, column=8, sticky='W', padx=5, pady=2)
-        browseBtnthree = tk.Button(self.hintone, text="Browse ...", command=self.savebutton)
+        browseBtnthree = tk.Button(self.tabone, text="Browse ...", command=self.savebutton)
         browseBtnthree.grid(row=2, column=8, sticky='W', padx=5, pady=2)
         self.openreport_var = tk.BooleanVar()
         checkopnrep = tk.Checkbutton(
@@ -82,51 +108,100 @@ class MainApplication(tk.Frame):
             variable=self.openreport_var)
         checkopnrep.grid(row=5)
         #=======================================================================
-        # Draw the Labels
+        # Create Buttons for SecondaryFrame
         #=======================================================================
-        labelone = tk.Label(self.hintone, text="Select the Main Report File: ")
+        self.ok_button = tk.Button(self.tabtwo, text="OK", command=self.OKButton2)
+        self.ok_button.grid(row=4, column=0, sticky='W' + 'E', padx=5, pady=5, ipadx=1, ipady=1)
+        self.exit_button = tk.Button(self.tabtwo, text="Exit", command=self.cancelbutton)
+        self.exit_button.grid(row=4, column=1, sticky='W', padx=5, pady=5, ipadx=30, ipady=1)
+        browseBtnone = tk.Button(self.tabtwo, text="Browse ...", command=self.browseFirst)
+        browseBtnone.grid(row=0, column=8, sticky='W', padx=5, pady=2)
+        browseBtntwo = tk.Button(self.tabtwo, text="Browse ...", command=self.browseSecond)
+        browseBtntwo.grid(row=1, column=8, sticky='W', padx=5, pady=2)
+        checkopnrep = tk.Checkbutton(
+            self.hintsettings2,
+            text="Open Log After Process Finished",
+            variable=self.openreport_var)
+        checkopnrep.grid(row=5)
+        #=======================================================================
+        # Draw the Labels on MainFrame
+        #=======================================================================
+        labelone = tk.Label(self.tabone, text="Select the Main Report File: ")
         labelone.grid(row=0, column=0, sticky='E', padx=5, pady=2)
-        labeltwo = tk.Label(self.hintone, text="Select the Empty Tetlist: ")
+        labeltwo = tk.Label(self.tabone, text="Select the Empty Tetlist: ")
         labeltwo.grid(row=1, column=0, sticky='E', padx=5, pady=2)
-        labelthree = tk.Label(self.hintone, text="Select the Output Path: ")
+        labelthree = tk.Label(self.tabone, text="Select the Output Path: ")
         labelthree.grid(row=2, column=0, sticky='E', padx=5, pady=2)
         #=======================================================================
-        # File Selection Entry
+        # Draw the Labels on SecondaryFrame
         #=======================================================================
-        self.labelent_one = tk.Entry(self.hintone)
+        labelone = tk.Label(self.tabtwo, text="Select Location of SW Files: ")
+        labelone.grid(row=0, column=0, sticky='E', padx=5, pady=2)
+        labeltwo = tk.Label(self.tabtwo, text="Select E-SYS Data Folder: ")
+        labeltwo.grid(row=1, column=0, sticky='E', padx=5, pady=2)
+        #=======================================================================
+        # File Selection Entry on MainFrame
+        #=======================================================================
+        self.labelent_one = tk.Entry(self.tabone)
         self.labelent_one.grid(row=0, column=1, columnspan=7, sticky="W", pady=3)
-        self.labelent_two = tk.Entry(self.hintone)
+        self.labelent_two = tk.Entry(self.tabone)
         self.labelent_two.grid(row=1, column=1, columnspan=7, sticky="WE", pady=2)
-        self.labelent_three = tk.Entry(self.hintone)
+        self.image('logo.jpg', self.hintpic)
+        self.get_centercoordinate(root)
+        root.attributes('-alpha', 1.0)
+        #=======================================================================
+        # Output File Path
+        #=======================================================================
+        # File Selection 2 Entry
+        self.labelent_three = tk.Entry(self.tabone)
         self.labelent_three.grid(row=2, column=1, columnspan=7, sticky="WE", pady=2)
-        self.image('logo.jpg')
+        #=======================================================================
+        # File Selection Entry on SecondaryFrame
+        #=======================================================================
+        self.labelent2_one = tk.Entry(self.tabtwo)
+        self.labelent2_one.grid(row=0, column=1, columnspan=7, sticky="W", pady=3)
+        self.labelent2_two = tk.Entry(self.tabtwo)
+        self.labelent2_two.grid(row=1, column=1, columnspan=7, sticky="WE", pady=2)
+        self.image('logo.jpg', self.hintpic2)
+        self.get_centercoordinate(root)
+        root.attributes('-alpha', 1.0)
+
         self.get_centercoordinate(root)
         root.attributes('-alpha', 1.0)
 
     def browseFirst(self):
         '''Select the files to Edit'''
-        current_entry = self.labelent_one
-        self.file_one = fileopenbox(filetypes=['*.xml'])
-        if self.file_one.encode('utf-8') == '.':
+        current_tab = self.parent.tab(self.parent.select(), "text")
+        if current_tab == 'Create Testlist':
+            current_entry = self.labelent_one
+            self.file_one = fileopenbox(filetypes=['*.xml'])
+        elif current_tab == 'Prepare for Flashing':
+            current_entry = self.labelent2_one
+            self.file_one = diropenbox()
+        try:
+            if self.file_one.encode('utf-8') == '.':
+                pass
+            elif self.file_one:
+                current_entry.insert(0, str(self.file_one.encode('utf-8')))
+        except AttributeError:
             pass
-        elif self.file_one:
-            current_entry.insert(0, str(self.file_one.encode('utf-8')))
 
     def browseSecond(self):
         '''Select the files to Edit'''
-        current_entry = self.labelent_two
-        self.file_two = fileopenbox(filetypes=['*.xml'])
-        if self.file_two.encode('utf-8') == '.':
+        current_tab = self.parent.tab(self.parent.select(), "text")
+        if current_tab == 'Create Testlist':
+            current_entry = self.labelent_two
+            self.file_two = fileopenbox(filetypes=['*.xml'])
+        elif current_tab == 'Prepare for Flashing':
+            current_entry = self.labelent2_two
+            self.file_two = diropenbox()
+        try:
+            if self.file_two.encode('utf-8') == '.':
+                pass
+            elif self.file_two:
+                current_entry.insert(0, str(self.file_two.encode('utf-8')))
+        except AttributeError:
             pass
-        elif self.file_two:
-            current_entry.insert(0, str(self.file_two.encode('utf-8')))
-
-    def savebutton(self):
-        '''Select the files save path'''
-        current_entry = self.labelent_three
-        self.save_list = diropenbox()
-        if self.save_list:
-            current_entry.insert(0, self.save_list.encode('utf-8') + '\Example.tl')
 
     def OKButton(self):
         '''Input Verification and start the process'''
@@ -136,7 +211,22 @@ class MainApplication(tk.Frame):
             self.t1.start()
             self.disablebuttons()
             self.progress()
-        elif not self.file_one or self.file_two or self.save_list:
+        elif not (self.file_one and self.file_two and self.save_list):
+            self.errormessage()
+        elif not self.t1.is_alive():
+            self.pb.stop()
+            self.pbar.destroy()
+            self.enablebuttons()
+
+    def OKButton2(self):
+        '''Input Verification and start the process'''
+        self.get_inputs2()
+        if self.file_one and self.file_two:
+            self.t1 = threading.Thread(target=self.prepare_files, name='controller')
+            self.t1.start()
+            self.disablebuttons()
+            self.progress()
+        elif not (self.file_one and self.file_two):
             self.errormessage()
         elif not self.t1.is_alive():
             self.pb.stop()
@@ -161,7 +251,12 @@ class MainApplication(tk.Frame):
             tkMessageBox.showinfo(
                 'Finished',
                 'Process has been finished. See Log File in the Log directory.')
-            openlog = Logger.Logger.logging(self.listofFailed, self.file_one)
+            current_tab = self.parent.tab(self.parent.select(), "text")
+            if current_tab == 'Create Testlist':
+                openlog = Logger.Logger.logging(self.listofFailed, self.file_one)
+            elif current_tab == 'Prepare for Flashing':
+                openlog = Logger.Logger.file_preparing(
+                    self.obj.get_CAFs())
             if self.openreport_var.get():
                 sp.Popen(["notepad.exe", openlog])
 
@@ -175,6 +270,14 @@ class MainApplication(tk.Frame):
     def parserrormessage(self):
         tkMessageBox.showinfo("Error", "Unable to Parse Data. Not a valid Input Files")
 
+    def prepare_files(self):
+        self.obj = Execution.Execute(
+            self.labelent2_one.get(),
+            self.labelent2_two.get(),
+            console=False)
+        self.obj.init_files()
+        self.queue_event('Success')
+
     def parse(self):
         self.source = etree.parse(self.file_one)
         self.source_root = self.source.getroot()
@@ -182,8 +285,11 @@ class MainApplication(tk.Frame):
         Parser.XmlParser(self.source).get_failedtestnames()
         self.listofFailed = Parser.XmlParser.XML_ATTRS['failed']
         self.output = self.save_list
-        Parser.ListCreator().testlist_creator(self.listofFailed, self.output, self.destination)
-        self.queue_event('Success')
+        if (Parser.ListCreator().testlist_creator(
+                self.listofFailed, self.output, self.destination)) is True:
+            self.queue_event('Success')
+        else:
+            self.queue_event('Parsing error')
 
     def progress(self):
         self.pbar = tk.Tk()
@@ -199,23 +305,38 @@ class MainApplication(tk.Frame):
         self.get_centercoordinate(self.pbar)
         self.pb.start()
 
+    def savebutton(self):
+        '''Select the files save path'''
+        current_tab = self.parent.tab(self.parent.select(), "text")
+        if current_tab == 'Merging':
+            current_entry = self.mergeent_three
+        elif current_tab == 'Create Testlist':
+            current_entry = self.labelent_three
+        self.save_list = diropenbox(default=r'd:\\')
+        if self.save_list:
+            current_entry.insert(0, self.save_list.encode('utf-8') + 'output.tl'.encode('utf-8'))
+
     def disablebuttons(self):
         self.ok_button.config(state='disabled')
 
     def enablebuttons(self):
         self.ok_button.config(state='normal')
 
-    def image(self, nameofpic):
+    def image(self, nameofpic, container):
         image = Image.open(nameofpic)
         photo = ImageTk.PhotoImage(image)
-        label = tk.Label(self.hintpic, image=photo)
+        label = tk.Label(container, image=photo)
         label.image = photo
-        label.grid()
+        label.grid(sticky='E')
 
     def get_inputs(self):
         self.file_one = self.labelent_one.get()
         self.file_two = self.labelent_two.get()
         self.save_list = self.labelent_three.get()
+
+    def get_inputs2(self):
+        self.file_one = self.labelent2_one.get()
+        self.file_two = self.labelent2_two.get()
 
     def get_centercoordinate(self, win):
         win.update_idletasks()
