@@ -11,13 +11,14 @@ class Logger(object):
         timestamp = 'ACSM5_' + str(time.strftime('%Y_%m_%d_%H_%M'))
         pathdir = os.path.dirname(os.path.realpath(__file__))
         filedir = os.path.dirname(pathdir)
-        logfilename = filedir + '\\History\\' + timestamp
         try:
+            logfilename = filedir + '\\History\\' + timestamp
             logfile = open(filedir + '\\History\\' + timestamp, "w")
-        except IOError:
+        except IOError as e:
             logfile = open((os.path.dirname(filedir)) + '\\History\\' + timestamp, "w")
             logfilename = (os.path.dirname(filedir)) + '\\History\\' + timestamp
-            print(logfilename)
+            print(e)
+            return 'Error creating logfile'
         logfile.write('Process Finished ' +
                       str(len(listofFiles)) +
                       ' test cases has been added to the testlist. ')

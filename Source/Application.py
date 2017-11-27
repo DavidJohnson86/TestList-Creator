@@ -256,7 +256,7 @@ class MainApplication(tk.Frame):
                 openlog = Logger.Logger.logging(self.listofFailed, self.file_one)
             elif current_tab == 'Prepare for Flashing':
                 openlog = Logger.Logger.file_preparing(
-                    self.obj.get_CAFs())
+                    self.obj.get_cafs())
             if self.openreport_var.get():
                 sp.Popen(["notepad.exe", openlog])
 
