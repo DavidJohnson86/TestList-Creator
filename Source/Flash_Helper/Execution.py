@@ -1,6 +1,5 @@
 '''
 Created on 2017. okt. 24.
-
 @author: SzuroveczD
 '''
 
@@ -54,7 +53,7 @@ class Execute(object):
     def set_tal_file(self):
         """Set TAL file name."""
         self.tal_file = 'TAL_ACSM05_SWFL_' + self.sw_ver + '_Original_CAFs.xml'
-
+    
     @staticmethod
     def get_version(file):
         """Extract SW version from file name."""
@@ -87,22 +86,23 @@ class Execute(object):
                 os.mkdir(self.sw_ver)
             except WindowsError:
                 self.message_handler(Execute.DIR_EXIST)
-        self.steps()
 
     def init_files(self):
         """Get the SW and Boot Loader version, map the files and check that all file
         is available for flashing."""
-        self.cafs = (
-            {elem: file for elem in self.cafs for file in os.listdir(
-                self.source_folder)if str(elem.lower())[3:] in file})
+        try:
+            self.cafs = (
+                    {elem: file for elem in self.cafs for file in os.listdir(
+                        self.source_folder)if str(elem.lower())[3:] in file})
+        except FileNotFoundError as error:
+            print(self.message_handler(error))
         if self.verification():
-            self.message_handler(Execute.INIT_PASS)
             self.sw_ver = self.get_version(self.cafs['CAF1B2F'])
             self.btld_ver = self.get_version(self.cafs['CAF1B2E'])
-            return True
+            self.message_handler(Execute.INIT_PASS)
+            self.steps()
         else:
             self.message_handler(Execute.INIT_FAIL)
-            return False
 
     def tal_creator(self):
         '''Copies the TAL file sample to the specific directory.'''
@@ -118,6 +118,7 @@ class Execute(object):
     def steps(self):
         """Create Folders,copy the files to the requested directory and moving the
         TAL sample file to the requested location."""
+        self.create_folders()
         for file_name in os.listdir(self.source_folder):
             try:
                 if 'cafd' in file_name:
@@ -169,6 +170,5 @@ class Execute(object):
 if __name__ == "__main__":
     SOURCE_FILE = r'd:\temp\006_005_001'
     DESTINATION_FILE = r'c:\Data'
-    run = Execute(SOURCE_FILE, DESTINATION_FILE)
-    if run.init_files():
-        run.create_folders()
+    Execute(SOURCE_FILE, DESTINATION_FILE).init_files()
+    
