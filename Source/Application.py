@@ -275,7 +275,7 @@ class MainApplication(tk.Frame):
             self.labelent2_one.get(),
             self.labelent2_two.get(),
             console=False)
-        self.obj.init_files()
+        self.obj.sequence()
         self.queue_event('Success')
 
     def parse(self):
