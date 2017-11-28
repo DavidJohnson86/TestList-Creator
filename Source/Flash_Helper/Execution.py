@@ -39,7 +39,7 @@ class Execute(object):
             'CAF1B2D': None,
             'CAF2ABF': None,
             'CAF1B2E': None}
-        self.directories = ['/CAF', '/SWE', '/TAL']
+        self.directories = ['\CAF', '\SWE', '\TAL']
         self.strbuilder = ''
 
     def set_sw_ver(self, value):
@@ -53,7 +53,7 @@ class Execute(object):
     def set_tal_file(self):
         """Set TAL file name."""
         self.tal_file = 'TAL_ACSM05_SWFL_' + self.sw_ver + '_Original_CAFs.xml'
-    
+
     @staticmethod
     def get_version(file):
         """Extract SW version from file name."""
@@ -81,28 +81,29 @@ class Execute(object):
     def create_folders(self):
         """Create folders with same name as SW version in the specified folders."""
         for folder in self.directories:
-            os.chdir(self.destination_folder + folder)
-            try:
+            if not os.path.isdir(self.destination_folder + folder + '\\' + self.sw_ver):
+                os.chdir(self.destination_folder + folder)
                 os.mkdir(self.sw_ver)
-            except WindowsError:
+            else:
                 self.message_handler(Execute.DIR_EXIST)
+                return False
+        return True
 
     def init_files(self):
         """Get the SW and Boot Loader version, map the files and check that all file
         is available for flashing."""
         try:
             self.cafs = (
-                    {elem: file for elem in self.cafs for file in os.listdir(
-                        self.source_folder)if str(elem.lower())[3:] in file})
-        except FileNotFoundError as error:
+                {elem: file for elem in self.cafs for file in os.listdir(
+                    self.source_folder)if str(elem.lower())[3:] in file})
+        except WindowsError as error:
             print(self.message_handler(error))
         if self.verification():
             self.sw_ver = self.get_version(self.cafs['CAF1B2F'])
             self.btld_ver = self.get_version(self.cafs['CAF1B2E'])
             self.message_handler(Execute.INIT_PASS)
-            self.steps()
-        else:
-            self.message_handler(Execute.INIT_FAIL)
+            return True
+        return False
 
     def tal_creator(self):
         '''Copies the TAL file sample to the specific directory.'''
@@ -112,13 +113,14 @@ class Execute(object):
         self.set_tal_file()
         try:
             os.rename(self.tal_sample, self.tal_file)
-        except Exception as error:
+        except WindowsError as error:
             self.message_handler(error)
+            return False
+        return True
 
     def steps(self):
         """Create Folders,copy the files to the requested directory and moving the
         TAL sample file to the requested location."""
-        self.create_folders()
         for file_name in os.listdir(self.source_folder):
             try:
                 if 'cafd' in file_name:
@@ -129,8 +131,8 @@ class Execute(object):
                                  '\\SWE' + '\\' + self.sw_ver)
             except Exception as error:
                 self.message_handler(error)
-        self.tal_creator()
-        self.parser()
+                return False
+        return True
 
     def copy_to(self, source_file, destination_folder):
         """Copy the source file to the destination folder"""
@@ -167,8 +169,16 @@ class Execute(object):
                     element[element_index].text = current_file_ver
         input_xml.write(self.tal_file)
 
+    def sequence(self):
+        """This is the correct sequence of program execution"""
+        if self.init_files():
+            self.create_folders()
+            if self.steps():
+                self.tal_creator()
+        else:
+            self.message_handler(Execute.INIT_FAIL)
+
 if __name__ == "__main__":
     SOURCE_FILE = r'd:\temp\006_005_001'
     DESTINATION_FILE = r'c:\Data'
-    Execute(SOURCE_FILE, DESTINATION_FILE).init_files()
-    
+    Execute(SOURCE_FILE, DESTINATION_FILE).sequence()
