@@ -9,6 +9,7 @@ import stat
 
 class MyTest(unittest.TestCase):
 
+    Debugger.enabled = True
     SOURCE_FILE_OK = r'd:\temp\006_005_001'
     DESTINATION_FILE_OK = r'c:\Data'
     SOURCE_FILE_NOK = r'd:\notexist'
@@ -25,7 +26,14 @@ class MyTest(unittest.TestCase):
             MyTest.DESTINATION_FILE_NOK,
             console=False)
 
-    def test_copyfiles(self):
+    def test_copyfiles2(self):
+        '''Negative test if copy files are ok'''
+        self.positive.init_files()
+        self.positive.create_folders()
+        self.positive.source_folder = r'd:\\notexist'
+        self.assertEqual(self.positive.steps(), False)
+
+    def test_copyfiles1(self):
         '''Positive test if copy files are ok'''
         self.positive.init_files()
         self.positive.create_folders()
@@ -48,11 +56,11 @@ class MyTest(unittest.TestCase):
         self.positive.init_files()
         self.assertEqual(self.positive.create_folders(), False)
 
-    def test_filever1(self):
+    def test_filever2(self):
         '''Negative test if Files are not available'''
         self.assertEqual(self.negative.init_files(), False)
 
-    def test_filever2(self):
+    def test_filever1(self):
         '''Positive test if Files are available'''
         self.assertEqual(self.positive.init_files(), True)
 
@@ -68,6 +76,19 @@ class Helper():
                 shutil.rmtree(destination_folder + folder + '\\' + sw_ver)
             except WindowsError as error:
                 print(error)
+
+
+class Debugger(object):
+    enabled = False
+
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        if self.enabled:
+            print 'Entering', self.func.func_name
+            print '    args:', args, kwargs
+        return self.func(*args, **kwargs)
 
 
 if __name__ == "__main__":

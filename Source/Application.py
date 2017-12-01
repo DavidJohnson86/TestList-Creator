@@ -244,6 +244,13 @@ class MainApplication(tk.Frame):
             self.pb.stop()
             self.pbar.destroy()
             self.enablebuttons()
+        elif message == 'Error':
+            tkMessageBox.showinfo(
+                'Error',
+                str(self.obj.get_message_buffer()))
+            self.pb.stop()
+            self.pbar.destroy()
+            self.enablebuttons()
         elif message == 'Success':
             self.pb.stop()
             self.pbar.destroy()
@@ -275,8 +282,10 @@ class MainApplication(tk.Frame):
             self.labelent2_one.get(),
             self.labelent2_two.get(),
             console=False)
-        self.obj.sequence()
-        self.queue_event('Success')
+        if self.obj.sequence() is True:
+            self.queue_event('Success')
+        else:
+            self.queue_event('Error')
 
     def parse(self):
         self.source = etree.parse(self.file_one)

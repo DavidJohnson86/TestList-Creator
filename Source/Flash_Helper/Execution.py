@@ -121,17 +121,17 @@ class Execute(object):
     def steps(self):
         """Create Folders,copy the files to the requested directory and moving the
         TAL sample file to the requested location."""
-        for file_name in os.listdir(self.source_folder):
-            try:
+        try:
+            for file_name in os.listdir(self.source_folder):
                 if 'cafd' in file_name:
                     self.copy_to(self.source_folder + '\\' + file_name, self.destination_folder +
                                  '\\CAF' + '\\' + self.sw_ver)
                 elif 'swfl' or 'btld' in file_name:
                     self.copy_to(self.source_folder + '\\' + file_name, self.destination_folder +
                                  '\\SWE' + '\\' + self.sw_ver)
-            except Exception as error:
-                self.message_handler(error)
-                return False
+        except Exception as error:
+            self.message_handler(error)
+            return False
         return True
 
     def copy_to(self, source_file, destination_folder):
@@ -175,8 +175,12 @@ class Execute(object):
             self.create_folders()
             if self.steps():
                 self.tal_creator()
+            else:
+                return False
         else:
             self.message_handler(Execute.INIT_FAIL)
+            return False
+        return True
 
 if __name__ == "__main__":
     SOURCE_FILE = r'd:\temp\006_005_001'
